@@ -216,10 +216,10 @@ Product: FROZEN
 Language: FROZEN
 Stack: FROZEN
 Git 0G: PASS
-Bootstrap: IN_PROGRESS
-Implementation: NOT_STARTED
-Runtime: NOT_VERIFIED
-F001: NOT_RUN
+Bootstrap: PASS
+Implementation: PASS
+Runtime: VERIFIED
+F001: PASS
 Push: VERIFIED
 
 ## Out of P0
