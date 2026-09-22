@@ -1,4 +1,5 @@
 from pathlib import Path
+import socket
 
 import pytest
 from fastapi.testclient import TestClient
@@ -45,6 +46,50 @@ def test_change_human_gate_and_persistence(client: TestClient):
     assert "CONFIRMED" in client.get("/").text
     with TestClient(app.app) as restarted_client:
         assert "CONFIRMED" in restarted_client.get("/").text
+
+
+def test_scn_happy_confirms_only_after_packet_is_ready(client: TestClient):
+    client.post(
+        "/evidence",
+        data={"requirement_id": "1", "lang": "ru"},
+        files={"file": ("happy-proof.txt", b"proof", "text/plain")},
+    )
+    with app.database() as connection:
+        evidence_id = connection.execute("SELECT id FROM evidence").fetchone()[0]
+    ready = client.post(f"/evidence/{evidence_id}/validate", data={"lang": "ru"}, follow_redirects=True)
+    assert "PACKET_READY_FOR_INSPECTION" in ready.text
+    assert "LOCKED" in ready.text
+    confirmed = client.post("/work-items/1/confirm", data={"lang": "ru"}, follow_redirects=True)
+    assert "CONFIRMED" in confirmed.text
+    assert "UNLOCKED" in confirmed.text
+
+
+def test_scn_unknown_does_not_promote_or_unlock(client: TestClient):
+    with app.database() as connection:
+        connection.execute("UPDATE work_items SET declared_truth = 'unknown' WHERE id = 1")
+        state = app.work_item_state(connection)
+    assert state["item"]["declared_truth"] == "unknown"
+    assert state["workflow_status"] == "NOT_READY_FOR_INSPECTION"
+    assert state["next_stage"] == "LOCKED"
+    assert client.post("/work-items/1/confirm", data={"lang": "ru"}).status_code == 409
+
+
+def test_scn_fallback_manual_flow_uses_no_external_connection(client: TestClient, monkeypatch: pytest.MonkeyPatch):
+    def no_external_connection(*args, **kwargs):
+        raise AssertionError("P0 must not call an external service")
+
+    monkeypatch.setattr(socket, "create_connection", no_external_connection)
+    client.post(
+        "/evidence",
+        data={"requirement_id": "1", "lang": "ru"},
+        files={"file": ("fallback-proof.txt", b"proof", "text/plain")},
+    )
+    with app.database() as connection:
+        evidence_id = connection.execute("SELECT id FROM evidence").fetchone()[0]
+    client.post(f"/evidence/{evidence_id}/validate", data={"lang": "ru"})
+    result = client.post("/work-items/1/confirm", data={"lang": "ru"}, follow_redirects=True)
+    assert "CONFIRMED" in result.text
+    assert "UNLOCKED" in result.text
 
 
 def test_health_and_whole_screen_kazakh(client: TestClient):
