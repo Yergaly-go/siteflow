@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="{{ lang }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ text.title }}</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="/static/htmx.min.js" defer></script>
+  </head>
+  <body>
+    <main>
+      <nav aria-label="{{ text.language }}">
+        <a href="/?lang=ru" {% if lang == 'ru' %}aria-current="page"{% endif %}>РУС</a>
+        <span>|</span>
+        <a href="/?lang=kz" {% if lang == 'kz' %}aria-current="page"{% endif %}>ҚАЗ</a>
+      </nav>
+      <h1>{{ text.title }}</h1>
+      <p class="boundary">{{ text.boundary }}</p>
+      <section aria-labelledby="work-title">
+        <h2 id="work-title">{{ text.work_item }}: {{ text.work_name }}</h2>
+        <dl>
+          <div><dt>{{ text.workflow_status }}</dt><dd>{{ state.workflow_status }}</dd></div>
+          <div><dt>{{ text.truth }}</dt><dd>{{ state.item['declared_truth'] }}</dd></div>
+          <div><dt>{{ text.next_stage }}</dt><dd>{{ state.next_stage }}</dd></div>
+        </dl>
+      </section>
+      <section aria-labelledby="packet-title">
+        <h2 id="packet-title">{{ text.packet }}</h2>
+        <h3>{{ text.requirement_name }}</h3>
+        {% if state.missing %}
+          <p class="alert">{{ text.missing }}: {{ text.requirement_name }} — MISSING</p>
+        {% endif %}
+        {% if state.evidence %}
+          <p>{{ state.evidence['original_name'] }} — <strong>{{ state.evidence['status'] }}</strong></p>
+          <p>{{ text.truth }}: {{ state.evidence['truth_type'] }}</p>
+          {% if state.evidence['status'] == 'NEEDS_REVIEW' %}
+            <form method="post" action="/evidence/{{ state.evidence['id'] }}/validate">
+              <input type="hidden" name="lang" value="{{ lang }}">
+              <button type="submit">{{ text.validate }}</button>
+            </form>
+          {% endif %}
+        {% else %}
+          <form method="post" action="/evidence" enctype="multipart/form-data">
+            <input type="hidden" name="requirement_id" value="{{ state.requirement['id'] }}">
+            <input type="hidden" name="lang" value="{{ lang }}">
+            <label>{{ text.upload_hint }} <input type="file" name="file" required></label>
+            <button type="submit">{{ text.submit }}</button>
+          </form>
+        {% endif %}
+      </section>
+      <section aria-labelledby="human-title">
+        <h2 id="human-title">{{ text.human }}</h2>
+        {% if state.workflow_status == 'PACKET_READY_FOR_INSPECTION' %}
+          <form method="post" action="/work-items/1/confirm">
+            <input type="hidden" name="lang" value="{{ lang }}">
+            <button type="submit">{{ text.confirm }}</button>
+          </form>
+        {% elif state.workflow_status == 'CONFIRMED' %}
+          <p>{{ text.unlocked }}</p>
+        {% else %}
+          <p>{{ text.locked }}</p>
+        {% endif %}
+      </section>
+    </main>
+  </body>
+</html>
