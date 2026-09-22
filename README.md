@@ -220,6 +220,7 @@ Bootstrap: IN_PROGRESS
 Implementation: NOT_STARTED
 Runtime: NOT_VERIFIED
 F001: NOT_RUN
+Push: VERIFIED
 
 ## Out of P0
 

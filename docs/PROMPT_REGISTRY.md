@@ -22,7 +22,7 @@ NOT_VERIFIED != PASS
 | ID | Type | Owner | Goal | Status | Evidence | Commit |
 | PD001 | Product | Decision chat | Freeze Product/P0 | PASS | Hidden Works Evidence Gate frozen | — |
 | SD001 | Stack | Stack chat | Freeze implementation stack | PASS | FastAPI/HTMX + SQLite + multipart frozen | — |
-| B001 | Bootstrap | A0 | Bootstrap repo + Git delivery | IN_PROGRESS | execution started | — |
+| B001 | Bootstrap | A0 | Bootstrap repo + Git delivery | PASS | bootstrap files verified; push verified; remote SHA matched | 85c4b0a296de9897c531166cf171e6ae8f8de3bc |
 | F001 | Feature | A0 | First persistent evidence-gate Green | PLANNED | NOT_RUN | — |
 
 ## Prompt IDs
