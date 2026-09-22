@@ -1,5 +1,6 @@
 from pathlib import Path
 import socket
+from html.parser import HTMLParser
 
 import pytest
 from fastapi.testclient import TestClient
@@ -101,3 +102,39 @@ def test_health_and_whole_screen_kazakh(client: TestClient):
     assert "Гидроизоляция фундаментной плиты" not in kz.text
     assert "Workflow status" not in kz.text
     assert "Next stage" not in kz.text
+
+
+class VisibleText(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.parts = []
+
+    def handle_data(self, data):
+        self.parts.append(data)
+
+
+@pytest.mark.parametrize("language, completed_claim", [
+    ("ru", "Человек подтвердил связь доказательства с обязательным требованием"),
+    ("kz", "Адам дәлелдеменің міндетті талаппен байланысын растады"),
+])
+def test_needs_review_must_not_claim_completed_human_validation(client, language, completed_claim):
+    response = client.post(
+        "/evidence",
+        data={"requirement_id": "1", "lang": language},
+        files={"file": ("semantic-proof.txt", b"synthetic regression evidence", "text/plain")},
+        follow_redirects=True,
+    )
+    assert response.status_code == 200
+    with app.database() as connection:
+        state = app.work_item_state(connection)
+        assert state["evidence"]["status"] == "NEEDS_REVIEW"
+        assert state["evidence"]["truth_type"] == "observed"
+        assert state["item"]["human_decision"] is None
+        assert state["workflow_status"] == "NOT_READY_FOR_INSPECTION"
+        assert state["next_stage"] == "LOCKED"
+    parser = VisibleText()
+    parser.feed(response.text)
+    rendered_text = " ".join(" ".join(parser.parts).split())
+    assert completed_claim not in rendered_text, (
+        f"{language}: NEEDS_REVIEW must not claim completed human validation: {completed_claim}"
+    )
