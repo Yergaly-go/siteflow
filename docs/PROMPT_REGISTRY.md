@@ -25,6 +25,7 @@ NOT_VERIFIED != PASS
 | B001 | Bootstrap | A0 | Bootstrap repo + Git delivery | PASS | bootstrap files verified; push verified; remote SHA matched | 85c4b0a296de9897c531166cf171e6ae8f8de3bc |
 | F001 | Feature | A0 | First persistent evidence-gate Green | PASS | health, deterministic scenarios, browser flow, refresh/restart persistence verified | f02f8eebc05aabd3cf8b0b2b9d2a5945b6857f0e |
 | F002 | Verification | A0 | P0 scenario closure | PASS | six scenarios, pytest, browser, and restart regression verified | 09f078619395e084dae38dc9ffbdab0d0055e33d |
+| F003 | Verification | A0 | Demo hardening / 3x repeatability | BLOCKED | DEMO_INITIAL_STATE_RESET_MISSING; pending-evidence UI claims completed validation; 3x browser proof NOT_RUN; see docs/DEMO_RUNBOOK.md | — |
 
 ## Prompt IDs
 
