@@ -220,6 +220,8 @@ Bootstrap: PASS
 Implementation: PASS
 Runtime: VERIFIED
 F001: PASS
+F002: PASS
+P0 Green: VERIFIED
 Push: VERIFIED
 
 ## Out of P0
