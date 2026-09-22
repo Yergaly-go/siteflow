@@ -6,53 +6,224 @@
     <title>{{ text.title }}</title>
     <link rel="stylesheet" href="/static/style.css">
     <script src="/static/htmx.min.js" defer></script>
-    <style>
-      .file-picker { display: flex; align-items: center; gap: 10px; margin-top: 7px; }
-      .file-picker input { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
-      .file-picker-button { display: inline-flex; align-items: center; min-height: 38px; padding: 8px 12px; color: var(--blue); background: var(--blue-soft); border: 1px solid #bfd4dc; border-radius: 4px; font-size: .82rem; font-weight: 700; cursor: pointer; }
-      .file-picker-name { min-width: 0; color: var(--muted); font-size: .82rem; overflow-wrap: anywhere; }
-      .file-picker input:focus-visible + .file-picker-button { outline: 2px solid var(--blue); outline-offset: 2px; }
-    </style>
+    <script src="/static/demo.js" defer></script>
   </head>
   <body>
     <main class="shell">
-      <header class="header">
-        <div><p class="product">SiteFlow</p><h1>{% if lang == 'ru' %}Скрытые работы — проверка доказательств{% else %}Жасырын жұмыстар — дәлелдемелерді тексеру{% endif %}</h1><p class="subtitle">{% if lang == 'ru' %}Проверяем обязательные материалы перед вызовом инспектора.{% else %}Инспекторды шақырмас бұрын міндетті материалдарды тексереміз.{% endif %}</p></div>
-        <nav class="language" aria-label="{{ text.language }}"><a href="/?lang=ru" {% if lang == 'ru' %}aria-current="page"{% endif %}>РУС</a><span>|</span><a href="/?lang=kz" {% if lang == 'kz' %}aria-current="page"{% endif %}>ҚАЗ</a></nav>
-      </header>
+      <section class="demo-entry" data-demo-entry aria-labelledby="demo-entry-title">
+        <div class="entry-header">
+          <div>
+            <p class="product">SiteFlow</p>
+            <h1 id="demo-entry-title">Hidden Works Evidence Gate</h1>
+          </div>
+          <nav class="language" aria-label="{{ text.language }}">
+            <a href="/?lang=ru" {% if lang == 'ru' %}aria-current="page"{% endif %}>РУС</a>
+            <span aria-hidden="true">|</span>
+            <a href="/?lang=kz" {% if lang == 'kz' %}aria-current="page"{% endif %}>ҚАЗ</a>
+          </nav>
+        </div>
+        <p class="entry-copy">{% if lang == 'ru' %}Обязательные доказательства проверяются до передачи работы инспектору.{% else %}Міндетті дәлелдемелер жұмыс инспекторға берілгенге дейін тексеріледі.{% endif %}</p>
 
-      <section class="context" aria-labelledby="context-title"><i aria-hidden="true"></i><div><p class="label" id="context-title">{% if lang == 'ru' %}Работа заявлена готовой{% else %}Жұмыс дайын деп жарияланды{% endif %}</p><p class="work">{{ text.work_name }}</p></div><code>WORK ITEM · 1</code></section>
+        <div class="entry-context">
+          <p class="label">{% if lang == 'ru' %}Контекст демо{% else %}Демо контексті{% endif %}</p>
+          <div class="entry-context-row">
+            <div>
+              <span>{% if lang == 'ru' %}Скрытая работа{% else %}Жасырын жұмыс{% endif %}</span>
+              <strong>{{ text.work_name }}</strong>
+            </div>
+            <code>WORK ITEM · 1</code>
+          </div>
+        </div>
 
-      {% if state.workflow_status == 'CONFIRMED' %}
-        {% set status_class = 'confirmed' %}{% set status_icon = '✓' %}{% set status_title = 'Решение инспектора: подтверждено' if lang == 'ru' else 'Инспектор шешімі: расталды' %}{% set status_copy = 'Проверка завершена решением человека.' if lang == 'ru' else 'Тексеру адам шешімімен аяқталды.' %}
-      {% elif state.workflow_status == 'PACKET_READY_FOR_INSPECTION' %}
-        {% set status_class = 'ready' %}{% set status_icon = '✓' %}{% set status_title = 'Пакет готов к инспекции' if lang == 'ru' else 'Пакет инспекцияға дайын' %}{% set status_copy = 'Все обязательные доказательства подтверждены как соответствующие обязательным требованиям пакета.' if lang == 'ru' else 'Барлық міндетті дәлелдемелер пакет талаптарына сәйкес екені расталды.' %}
-      {% elif state.evidence %}
-        {% set status_class = 'review' %}{% set status_icon = '○' %}{% set status_title = 'Требует проверки' if lang == 'ru' else 'Тексеруді қажет етеді' %}{% set status_copy = 'Доказательство добавлено, но ещё не подтверждено человеком.' if lang == 'ru' else 'Дәлелдеме қосылды, бірақ адам әлі растаған жоқ.' %}
-      {% else %}
-        {% set status_class = 'missing' %}{% set status_icon = '⊘' %}{% set status_title = 'Не готово к инспекции' if lang == 'ru' else 'Инспекцияға дайын емес' %}{% set status_copy = 'Обязательный комплект доказательств неполный.' if lang == 'ru' else 'Міндетті дәлелдемелер жиынтығы толық емес.' %}
-      {% endif %}
-      <section class="status {{ status_class }}" aria-labelledby="status-title"><b aria-hidden="true">{{ status_icon }}</b><div><p class="label">{{ state.workflow_status }}</p><h2 id="status-title">{{ status_title }}</h2><p>{{ status_copy }}</p>{% if status_class == 'ready' %}<p class="boundary">{% if lang == 'ru' %}Готовность пакета не означает приёмку работы.{% else %}Пакеттің дайындығы жұмыстың қабылданғанын білдірмейді.{% endif %}</p>{% endif %}</div></section>
+        <div class="entry-role">
+          <p class="label">{% if lang == 'ru' %}Демо-перспектива{% else %}Демо-перспектива{% endif %}</p>
+          <p class="role-help">{% if lang == 'ru' %}Демо-перспектива — не авторизация и не управление правами.{% else %}Демо-перспектива — авторизация немесе құқықтарды басқару емес.{% endif %}</p>
+          <div class="role-segments entry-role-segments" role="group" aria-label="{% if lang == 'ru' %}Выберите демо-перспективу{% else %}Демо-перспективаны таңдаңыз{% endif %}">
+            <button type="button" class="role-segment is-active" data-entry-role="brigadier" aria-pressed="true">{% if lang == 'ru' %}Бригадир / инженер участка{% else %}Бригадир / учаске инженері{% endif %}</button>
+            <button type="button" class="role-segment" data-entry-role="inspector" aria-pressed="false">{% if lang == 'ru' %}Технадзор{% else %}Техникалық қадағалау{% endif %}</button>
+          </div>
+          <button type="button" class="primary-action entry-action" data-start-demo>{% if lang == 'ru' %}Продолжить{% else %}Жалғастыру{% endif %}</button>
+        </div>
+      </section>
 
-      {% if not state.evidence %}
-      <section class="blocker" aria-labelledby="blocker-title"><div><p class="label" id="blocker-title">{% if lang == 'ru' %}Что блокирует{% else %}Не бұғаттап тұр{% endif %}</p><h2>{% if lang == 'ru' %}Не загружено обязательное доказательство: {{ text.requirement_name | lower }}.{% else %}Міндетті дәлелдеме жүктелмеді: {{ text.requirement_name | lower }}.{% endif %}</h2></div><div><p class="label">{% if lang == 'ru' %}Следующее действие{% else %}Келесі әрекет{% endif %}</p><p>{% if lang == 'ru' %}Добавьте требуемое доказательство.{% else %}Қажетті дәлелдемені қосыңыз.{% endif %}</p><form method="post" action="/evidence" enctype="multipart/form-data"><input type="hidden" name="requirement_id" value="{{ state.requirement['id'] }}"><input type="hidden" name="lang" value="{{ lang }}"><label class="file">{% if lang == 'ru' %}Выберите файл доказательства{% else %}Дәлелдеме файлын таңдаңыз{% endif %}<span class="file-picker"><input type="file" name="file" required data-empty="{% if lang == 'ru' %}Файл не выбран{% else %}Файл таңдалмаған{% endif %}" onchange="this.parentElement.querySelector('.file-picker-name').textContent = this.files.length ? this.files[0].name : this.dataset.empty"><span class="file-picker-button">{% if lang == 'ru' %}Выбрать файл{% else %}Файлды таңдау{% endif %}</span><span class="file-picker-name" aria-live="polite">{% if lang == 'ru' %}Файл не выбран{% else %}Файл таңдалмаған{% endif %}</span></span></label><button type="submit">{% if lang == 'ru' %}Добавить доказательство{% else %}Дәлелдеме қосу{% endif %}</button></form></div></section>
-      {% endif %}
+      <div class="task-tool" data-task-tool hidden>
+        <header class="header">
+          <div>
+            <p class="product">SiteFlow</p>
+            <h1>{% if lang == 'ru' %}Скрытые работы — проверка доказательств{% else %}Жасырын жұмыстар — дәлелдемелерді тексеру{% endif %}</h1>
+            <p class="subtitle">{% if lang == 'ru' %}Проверяем обязательные материалы перед вызовом инспектора.{% else %}Инспекторды шақырмас бұрын міндетті материалдарды тексереміз.{% endif %}</p>
+          </div>
+          <nav class="language" aria-label="{{ text.language }}">
+            <a href="/?lang=ru" {% if lang == 'ru' %}aria-current="page"{% endif %}>РУС</a>
+            <span aria-hidden="true">|</span>
+            <a href="/?lang=kz" {% if lang == 'kz' %}aria-current="page"{% endif %}>ҚАЗ</a>
+          </nav>
+        </header>
 
-      <section class="evidence" aria-labelledby="evidence-title"><div class="section-title"><div><p class="label">{% if lang == 'ru' %}Обязательное доказательство{% else %}Міндетті дәлелдеме{% endif %}</p><h2 id="evidence-title">{{ text.requirement_name }}</h2></div><span>{% if lang == 'ru' %}Обязательное{% else %}Міндетті{% endif %}</span></div>{% if state.evidence %}<div class="evidence-row"><div class="filemark" aria-hidden="true">▣</div><div><strong>{{ state.evidence['original_name'] }}</strong><p>{% if lang == 'ru' %}Источник: загруженный файл{% else %}Дереккөз: жүктелген файл{% endif %} · {{ state.evidence['truth_type'] }}</p></div><em class="{% if state.evidence['status'] == 'VALIDATED_EVIDENCE' %}valid{% else %}pending{% endif %}">{% if state.evidence['status'] == 'VALIDATED_EVIDENCE' %}{% if lang == 'ru' %}✓ Доказательство подтверждено{% else %}✓ Дәлелдеме расталды{% endif %}{% else %}{% if lang == 'ru' %}Требует проверки{% else %}Тексеруді қажет етеді{% endif %}{% endif %}</em></div>{% else %}<p class="empty">○ {% if lang == 'ru' %}Доказательство ещё не добавлено.{% else %}Дәлелдеме әлі қосылмаған.{% endif %}</p>{% endif %}</section>
+        <section class="context" aria-labelledby="context-title">
+          <i aria-hidden="true"></i>
+          <div>
+            <p class="label" id="context-title">{% if lang == 'ru' %}Работа заявлена готовой{% else %}Жұмыс дайын деп жарияланды{% endif %}</p>
+            <p class="work">{{ text.work_name }}</p>
+          </div>
+          <code>WORK ITEM · 1</code>
+        </section>
 
-      {% if state.evidence and state.evidence['status'] == 'NEEDS_REVIEW' %}
-      <section class="validation" aria-labelledby="validation-title"><div><p class="label" id="validation-title">{% if lang == 'ru' %}Проверка доказательства человеком{% else %}Дәлелдемені адам тексеруі{% endif %}</p><h2>{% if lang == 'ru' %}Подтвердите связь доказательства с обязательным требованием.{% else %}Дәлелдің міндетті талаппен байланысын растаңыз.{% endif %}</h2><p>{% if lang == 'ru' %}Связь доказательства с обязательным требованием ещё не подтверждена человеком.{% else %}Дәлелдің міндетті талаппен байланысы адам тарапынан әлі расталған жоқ.{% endif %}</p></div><form method="post" action="/evidence/{{ state.evidence['id'] }}/validate"><input type="hidden" name="lang" value="{{ lang }}"><button type="submit">{% if lang == 'ru' %}Подтвердить доказательство{% else %}Дәлелдемені растау{% endif %}</button></form></section>
-      {% endif %}
+        <section class="role-bar" aria-labelledby="role-title">
+          <div>
+            <p class="label" id="role-title">{% if lang == 'ru' %}Демо-перспектива{% else %}Демо-перспектива{% endif %}</p>
+            <p>{% if lang == 'ru' %}Не авторизация и не управление правами.{% else %}Авторизация немесе құқықтарды басқару емес.{% endif %}</p>
+          </div>
+          <div class="role-segments" role="group" aria-label="{% if lang == 'ru' %}Переключить демо-перспективу{% else %}Демо-перспективаны ауыстыру{% endif %}">
+            <button type="button" class="role-segment" data-role-select="brigadier" aria-pressed="false">{% if lang == 'ru' %}Бригадир / инженер участка{% else %}Бригадир / учаске инженері{% endif %}</button>
+            <button type="button" class="role-segment" data-role-select="inspector" aria-pressed="false">{% if lang == 'ru' %}Технадзор{% else %}Техникалық қадағалау{% endif %}</button>
+          </div>
+        </section>
 
-      <section class="readiness"><p class="label">{% if lang == 'ru' %}Готовность к инспекции{% else %}Инспекцияға дайындық{% endif %}</p><p>{% if state.workflow_status in ['PACKET_READY_FOR_INSPECTION', 'CONFIRMED'] %}{% if lang == 'ru' %}Пакет сформирован для рассмотрения инспектором.{% else %}Пакет инспектордың қарауына қалыптастырылды.{% endif %}{% else %}{% if lang == 'ru' %}Пакет ещё не готов к передаче инспектору.{% else %}Пакет әлі инспекторға беруге дайын емес.{% endif %}{% endif %}</p></section>
+        {% if state.workflow_status == 'CONFIRMED' %}
+          {% set status_class = 'confirmed' %}
+          {% set status_icon = '✓' %}
+          {% set status_title = 'Решение инспектора: подтверждено' if lang == 'ru' else 'Инспектор шешімі: расталды' %}
+          {% set status_copy = 'Проверка завершена решением человека.' if lang == 'ru' else 'Тексеру адам шешімімен аяқталды.' %}
+        {% elif state.workflow_status == 'PACKET_READY_FOR_INSPECTION' %}
+          {% set status_class = 'ready' %}
+          {% set status_icon = '✓' %}
+          {% set status_title = 'Пакет готов к инспекции' if lang == 'ru' else 'Пакет инспекцияға дайын' %}
+          {% set status_copy = 'Все обязательные доказательства подтверждены как соответствующие обязательным требованиям пакета.' if lang == 'ru' else 'Барлық міндетті дәлелдемелер пакет талаптарына сәйкес екені расталды.' %}
+        {% elif state.evidence %}
+          {% set status_class = 'review' %}
+          {% set status_icon = '○' %}
+          {% set status_title = 'Требует проверки' if lang == 'ru' else 'Тексеруді қажет етеді' %}
+          {% set status_copy = 'Доказательство добавлено, но ещё не подтверждено человеком.' if lang == 'ru' else 'Дәлелдеме қосылды, бірақ адам әлі растаған жоқ.' %}
+        {% else %}
+          {% set status_class = 'missing' %}
+          {% set status_icon = '⊘' %}
+          {% set status_title = 'Не готово к инспекции' if lang == 'ru' else 'Инспекцияға дайын емес' %}
+          {% set status_copy = 'Обязательный комплект доказательств неполный.' if lang == 'ru' else 'Міндетті дәлелдемелер жиынтығы толық емес.' %}
+        {% endif %}
 
-      <div class="gates"><section aria-labelledby="decision-title"><p class="label" id="decision-title">{% if lang == 'ru' %}Решение инспектора{% else %}Инспектор шешімі{% endif %}</p>{% if state.workflow_status == 'CONFIRMED' %}<h2>✓ {% if lang == 'ru' %}Решение инспектора: подтверждено{% else %}Инспектор шешімі: расталды{% endif %}</h2><p>{% if lang == 'ru' %}Проверка завершена человеком.{% else %}Тексеру адаммен аяқталды.{% endif %}</p>{% elif state.workflow_status == 'PACKET_READY_FOR_INSPECTION' %}<h2>{% if lang == 'ru' %}Решение ещё не зафиксировано{% else %}Шешім әлі тіркелмеді{% endif %}</h2><p>{% if lang == 'ru' %}Пакет готов к рассмотрению инспектором.{% else %}Пакет инспектордың қарауына дайын.{% endif %}</p><form method="post" action="/work-items/1/confirm"><input type="hidden" name="lang" value="{{ lang }}"><button type="submit">{% if lang == 'ru' %}Зафиксировать решение инспектора{% else %}Инспектор шешімін тіркеу{% endif %}</button></form>{% else %}<h2>{% if lang == 'ru' %}Ожидается готовность пакета{% else %}Пакеттің дайындығы күтілуде{% endif %}</h2><p>{% if lang == 'ru' %}Решение инспектора станет доступно после проверки обязательного доказательства.{% else %}Инспектор шешімі міндетті дәлелдеме тексерілгеннен кейін қолжетімді болады.{% endif %}</p>{% endif %}</section><section class="stage {% if state.next_stage == 'UNLOCKED' %}unlocked{% else %}locked{% endif %}" aria-labelledby="stage-title"><p class="label" id="stage-title">{% if lang == 'ru' %}Следующий этап{% else %}Келесі кезең{% endif %}</p>{% if state.next_stage == 'UNLOCKED' %}<h2>🔓 {% if lang == 'ru' %}Разблокирован{% else %}Ашық{% endif %}</h2><p>{% if lang == 'ru' %}Решение инспектора подтверждено.{% else %}Инспектор шешімі расталды.{% endif %}</p>{% else %}<h2>🔒 {% if lang == 'ru' %}Заблокирован{% else %}Жабық{% endif %}</h2><p>{% if lang == 'ru' %}Разблокировка возможна только после решения инспектора CONFIRMED.{% else %}Құлып инспектордың CONFIRMED шешімінен кейін ғана ашылады.{% endif %}</p>{% endif %}</section></div>
-      <aside aria-label="{% if lang == 'ru' %}Технические состояния{% else %}Техникалық күйлер{% endif %}" style="display:flex;gap:10px;padding-top:16px;color:#7b8a90;font:0.68rem ui-monospace,monospace;">
-        <span>{{ text.human }}</span>
-        <code>{{ state.next_stage }}</code>
-        {% if not state.evidence %}<code>MISSING</code>{% endif %}
-        {% if state.evidence %}<code>{{ state.evidence['status'] }}</code>{% endif %}
-      </aside>
+        <section class="status {{ status_class }}" aria-labelledby="status-title">
+          <b aria-hidden="true">{{ status_icon }}</b>
+          <div>
+            <p class="label">{{ state.workflow_status }}</p>
+            <h2 id="status-title">{{ status_title }}</h2>
+            <p>{{ status_copy }}</p>
+            {% if status_class == 'ready' %}<p class="boundary">{% if lang == 'ru' %}Готовность пакета не означает приёмку работы.{% else %}Пакеттің дайындығы жұмыстың қабылданғанын білдірмейді.{% endif %}</p>{% endif %}
+          </div>
+        </section>
+
+        {% if not state.evidence %}
+          <section class="blocker" aria-labelledby="blocker-title">
+            <div>
+              <p class="label" id="blocker-title">{% if lang == 'ru' %}Что блокирует{% else %}Не бұғаттап тұр{% endif %}</p>
+              <h2>{% if lang == 'ru' %}Не загружено обязательное доказательство: {{ text.requirement_name | lower }}.{% else %}Міндетті дәлелдеме жүктелмеді: {{ text.requirement_name | lower }}.{% endif %}</h2>
+            </div>
+            <div class="brigadier-only">
+              <p class="label">{% if lang == 'ru' %}Следующее действие{% else %}Келесі әрекет{% endif %}</p>
+              <p>{% if lang == 'ru' %}Добавьте требуемое доказательство.{% else %}Қажетті дәлелдемені қосыңыз.{% endif %}</p>
+              <form method="post" action="/evidence" enctype="multipart/form-data">
+                <input type="hidden" name="requirement_id" value="{{ state.requirement['id'] }}">
+                <input type="hidden" name="lang" value="{{ lang }}">
+                <label class="file">
+                  {% if lang == 'ru' %}Выберите файл доказательства{% else %}Дәлелдеме файлын таңдаңыз{% endif %}
+                  <span class="file-picker">
+                    <input type="file" name="file" required data-empty="{% if lang == 'ru' %}Файл не выбран{% else %}Файл таңдалмаған{% endif %}" data-file-input>
+                    <span class="file-picker-button">{% if lang == 'ru' %}Выбрать файл{% else %}Файлды таңдау{% endif %}</span>
+                    <span class="file-picker-name" aria-live="polite">{% if lang == 'ru' %}Файл не выбран{% else %}Файл таңдалмаған{% endif %}</span>
+                  </span>
+                </label>
+                <button type="submit" class="primary-action">{% if lang == 'ru' %}Добавить доказательство{% else %}Дәлелдеме қосу{% endif %}</button>
+              </form>
+            </div>
+            <div class="inspector-only role-readonly">
+              <p class="label">{% if lang == 'ru' %}Текущая граница{% else %}Ағымдағы шекара{% endif %}</p>
+              <p>{% if lang == 'ru' %}Доказательство ожидается от бригадира / инженера участка.{% else %}Дәлелдеме бригадирден / учаске инженерінен күтілуде.{% endif %}</p>
+            </div>
+          </section>
+        {% endif %}
+
+        <section class="evidence" aria-labelledby="evidence-title">
+          <div class="section-title">
+            <div>
+              <p class="label">{% if lang == 'ru' %}Обязательное доказательство{% else %}Міндетті дәлелдеме{% endif %}</p>
+              <h2 id="evidence-title">{{ text.requirement_name }}</h2>
+            </div>
+            <span>{% if lang == 'ru' %}Обязательное{% else %}Міндетті{% endif %}</span>
+          </div>
+          {% if state.evidence %}
+            <div class="evidence-row">
+              <div class="filemark" aria-hidden="true">▣</div>
+              <div class="evidence-copy">
+                <strong>{{ state.evidence['original_name'] }}</strong>
+                <p>{% if lang == 'ru' %}Источник: загруженный файл{% else %}Дереккөз: жүктелген файл{% endif %} · {{ state.evidence['truth_type'] }}</p>
+              </div>
+              <em class="{% if state.evidence['status'] == 'VALIDATED_EVIDENCE' %}valid{% else %}pending{% endif %}">{% if state.evidence['status'] == 'VALIDATED_EVIDENCE' %}{% if lang == 'ru' %}✓ Доказательство подтверждено{% else %}✓ Дәлелдеме расталды{% endif %}{% else %}{% if lang == 'ru' %}Требует проверки{% else %}Тексеруді қажет етеді{% endif %}{% endif %}</em>
+            </div>
+          {% else %}
+            <p class="empty">○ {% if lang == 'ru' %}Доказательство ещё не добавлено.{% else %}Дәлелдеме әлі қосылмаған.{% endif %}</p>
+          {% endif %}
+        </section>
+
+        {% if state.evidence and state.evidence['status'] == 'NEEDS_REVIEW' %}
+          <section class="validation" aria-labelledby="validation-title">
+            <div>
+              <p class="label" id="validation-title">{% if lang == 'ru' %}Проверка доказательства человеком{% else %}Дәлелдемені адам тексеруі{% endif %}</p>
+              <h2>{% if lang == 'ru' %}Подтвердите связь доказательства с обязательным требованием.{% else %}Дәлелдің міндетті талаппен байланысын растаңыз.{% endif %}</h2>
+              <p>{% if lang == 'ru' %}Связь доказательства с обязательным требованием ещё не подтверждена человеком.{% else %}Дәлелдің міндетті талаппен байланысы адам тарапынан әлі расталған жоқ.{% endif %}</p>
+            </div>
+            <div class="validation-actions">
+              <button type="button" class="primary-action brigadier-only" data-role-select="inspector">{% if lang == 'ru' %}Продолжить как технадзор{% else %}Техникалық қадағалау ретінде жалғастыру{% endif %}</button>
+              <form method="post" action="/evidence/{{ state.evidence['id'] }}/validate" class="inspector-only">
+                <input type="hidden" name="lang" value="{{ lang }}">
+                <button type="submit" class="primary-action">{% if lang == 'ru' %}Подтвердить связь доказательства{% else %}Дәлелдің байланысын растау{% endif %}</button>
+              </form>
+            </div>
+          </section>
+        {% endif %}
+
+        <section class="readiness" aria-labelledby="readiness-title">
+          <p class="label" id="readiness-title">{% if lang == 'ru' %}Готовность к инспекции{% else %}Инспекцияға дайындық{% endif %}</p>
+          <p>{% if state.workflow_status in ['PACKET_READY_FOR_INSPECTION', 'CONFIRMED'] %}{% if lang == 'ru' %}Пакет сформирован для рассмотрения инспектором.{% else %}Пакет инспектордың қарауына қалыптастырылды.{% endif %}{% else %}{% if lang == 'ru' %}Пакет ещё не готов к передаче инспектору.{% else %}Пакет әлі инспекторға беруге дайын емес.{% endif %}{% endif %}</p>
+        </section>
+
+        <div class="gates">
+          <section aria-labelledby="decision-title">
+            <p class="label" id="decision-title">{{ text.human }}</p>
+            {% if state.workflow_status == 'CONFIRMED' %}
+              <h2>✓ {% if lang == 'ru' %}Решение инспектора: подтверждено{% else %}Инспектор шешімі: расталды{% endif %}</h2>
+              <p>{% if lang == 'ru' %}Проверка завершена человеком.{% else %}Тексеру адаммен аяқталды.{% endif %}</p>
+            {% elif state.workflow_status == 'PACKET_READY_FOR_INSPECTION' %}
+              <h2>{% if lang == 'ru' %}Решение ещё не зафиксировано{% else %}Шешім әлі тіркелмеді{% endif %}</h2>
+              <p>{% if lang == 'ru' %}Пакет готов к рассмотрению инспектором.{% else %}Пакет инспектордың қарауына дайын.{% endif %}</p>
+              <form method="post" action="/work-items/1/confirm" class="inspector-only">
+                <input type="hidden" name="lang" value="{{ lang }}">
+                <button type="submit" class="primary-action">{% if lang == 'ru' %}Зафиксировать решение инспектора{% else %}Инспектор шешімін тіркеу{% endif %}</button>
+              </form>
+              <p class="brigadier-only perspective-note">{% if lang == 'ru' %}Решение фиксируется в перспективе технадзора.{% else %}Шешім техникалық қадағалау перспективасында тіркеледі.{% endif %}</p>
+            {% else %}
+              <h2>{% if lang == 'ru' %}Ожидается готовность пакета{% else %}Пакеттің дайындығы күтілуде{% endif %}</h2>
+              <p>{% if lang == 'ru' %}Решение инспектора станет доступно после проверки обязательного доказательства.{% else %}Инспектор шешімі міндетті дәлелдеме тексерілгеннен кейін қолжетімді болады.{% endif %}</p>
+            {% endif %}
+          </section>
+          <section class="stage {% if state.next_stage == 'UNLOCKED' %}unlocked{% else %}locked{% endif %}" aria-labelledby="stage-title">
+            <p class="label" id="stage-title">{% if lang == 'ru' %}Следующий этап{% else %}Келесі кезең{% endif %}</p>
+            {% if state.next_stage == 'UNLOCKED' %}
+              <h2>🔓 {% if lang == 'ru' %}Разблокирован{% else %}Ашық{% endif %}</h2>
+              <p>{% if lang == 'ru' %}Решение инспектора подтверждено.{% else %}Инспектор шешімі расталды.{% endif %}</p>
+            {% else %}
+              <h2>🔒 {% if lang == 'ru' %}Заблокирован{% else %}Жабық{% endif %}</h2>
+              <p>{% if lang == 'ru' %}Разблокировка возможна только после решения инспектора CONFIRMED.{% else %}Құлып инспектордың CONFIRMED шешімінен кейін ғана ашылады.{% endif %}</p>
+            {% endif %}
+          </section>
+        </div>
+
+        <aside class="audit-line" aria-label="{% if lang == 'ru' %}Технические состояния{% else %}Техникалық күйлер{% endif %}">
+          <span><small>WORK ITEM</small><code>1</code></span>
+          <span><small>WORKFLOW STATUS</small><code>{{ state.workflow_status }}</code></span>
+          <span><small>EVIDENCE STATUS</small><code>{% if state.evidence %}{{ state.evidence['status'] }}{% else %}MISSING{% endif %}</code></span>
+          <span><small>NEXT STAGE</small><code>{{ state.next_stage }}</code></span>
+        </aside>
+      </div>
     </main>
   </body>
 </html>
