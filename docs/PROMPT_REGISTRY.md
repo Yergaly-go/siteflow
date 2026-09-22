@@ -1,3 +1,9 @@
+DEPRECATED FOR ACTIVE NAVIGATION
+
+Active project state: docs/STATUS.md. Delivery history: Git.
+Everything below is a historical record, including superseded numbering rules.
+New task entries are no longer required. Follow README.md and AGENTS.md instead.
+
 # Prompt Registry
 
 Execution registry for SiteFlow.

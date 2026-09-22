@@ -210,19 +210,15 @@ Health должен проверять доступность SQLite безоп�
 
 Server started != PASS.
 
-## Current status
+## Project navigation
 
-Product: FROZEN
-Language: FROZEN
-Stack: FROZEN
-Git 0G: PASS
-Bootstrap: PASS
-Implementation: PASS
-Runtime: VERIFIED
-F001: PASS
-F002: PASS
-P0 Green: VERIFIED
-Push: VERIFIED
+Frozen Product / Language / Stack context: this README.
+
+Current operational state: [docs/STATUS.md](docs/STATUS.md).
+
+Execution rules: [AGENTS.md](AGENTS.md).
+
+Delivery history: `git log --oneline -15`.
 
 ## Out of P0
 

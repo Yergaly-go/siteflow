@@ -28,9 +28,32 @@ AI output = candidate only.
 
 README.md = frozen project context.
 
-docs/PROMPT_REGISTRY.md = execution history.
+docs/STATUS.md = единственный current operational state.
+
+Git = delivery history (`git log --oneline -15`).
+
+docs/PROMPT_REGISTRY.md = historical record, не активная навигация.
 
 Terminal output = execution truth.
+
+## Navigation
+
+Перед началом работы читать:
+
+1. README.md — frozen product context;
+2. AGENTS.md — execution rules;
+3. docs/STATUS.md — current operational state.
+
+Для восстановления истории: `git log --oneline -15`.
+
+После accepted commit или смены основной задачи обновлять docs/STATUS.md.
+Это компактный текущий срез, не журнал; delivery SHA проверять по Git.
+
+F/U numbering не является обязательной навигацией.
+Correction не требует нового prompt ID.
+Закрытую задачу можно продолжить при обнаруженном FAIL с соблюдением failure policy.
+Новые записи в docs/PROMPT_REGISTRY.md больше не обязательны;
+его прежние правила нумерации и закрытия задач имеют только историческое значение.
 
 ## A0
 
@@ -80,11 +103,14 @@ work decomposition
 
 Shared contract change требует A0 coordination.
 
+Перед integration: STOP WRITES; writers остановлены, A0 = INTEGRATING,
+tester = READ-ONLY / REVIEWING.
+
 ## Worker task
 
 Каждая worker-задача содержит:
 
-- task ID;
+- task name (ID необязателен);
 - goal;
 - owned paths;
 - frozen constraints;
